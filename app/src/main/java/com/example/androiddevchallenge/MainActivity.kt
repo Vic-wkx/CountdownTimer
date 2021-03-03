@@ -16,18 +16,26 @@
 package com.example.androiddevchallenge
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.animation.core.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val viewModel: TimeViewModel by viewModels()
         setContent {
             MyTheme {
                 MyApp()
@@ -39,8 +47,29 @@ class MainActivity : AppCompatActivity() {
 // Start building your app here!
 @Composable
 fun MyApp() {
+    val viewModel: TimeViewModel = viewModel()
     Surface(color = MaterialTheme.colors.background) {
-        Text(text = "Ready... Set... GO!")
+        Column {
+            Text(text = viewModel.timeLeft)
+            TextField(
+                value = viewModel.totalTime,
+                onValueChange = {
+                    Log.d("~~~", it)
+                    viewModel.timeLeft = it
+                    viewModel.totalTime = it
+                },
+                label = { Text("Countdown Seconds") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            )
+            val timeLeft by animateIntAsState(0, animationSpec = tween(300, easing = LinearOutSlowInEasing))
+            Button(onClick = {
+                viewModel.timeLeft = timeLeft.toString()
+            }) {
+                Text(text = "Start")
+            }
+        }
+
     }
 }
 
