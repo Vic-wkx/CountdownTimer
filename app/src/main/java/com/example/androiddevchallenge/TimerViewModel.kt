@@ -43,7 +43,22 @@ class TimeViewModel : ViewModel() {
     }
 
     fun startButtonEnabled() = totalTime > 0
+
+    fun startButtonDisplayString() = status.startButtonDisplayString()
+
+    fun clickStartButton() {
+        when (status) {
+            TimerStatus.NOT_START, TimerStatus.COMPLETE -> start()
+            TimerStatus.STARTED -> pause()
+            TimerStatus.PAUSED -> resume()
+        }
+    }
+
     fun stopButtonEnabled() = totalTime > 0 && (status == TimerStatus.STARTED || status == TimerStatus.PAUSED)
+
+    fun clickStopButton() {
+        stop()
+    }
 
     fun timeLeftValue() = TimeFormatUtils.formatTime(timeLeft)
 
@@ -59,27 +74,16 @@ class TimeViewModel : ViewModel() {
         totalTime = value.toLong()
     }
 
-    fun startButtonDisplayString() = status.startButtonDisplayString()
+    fun hideEditText() = status == TimerStatus.STARTED || status == TimerStatus.PAUSED
 
-    fun clickStartButton() {
-        when (status) {
-            TimerStatus.NOT_START, TimerStatus.COMPLETE -> start()
-            TimerStatus.STARTED -> pause()
-            TimerStatus.PAUSED -> resume()
-        }
-    }
+    fun completeString() = if (status == TimerStatus.COMPLETE) "Complete!" else ""
 
-    fun clickStopButton() {
-        stop()
-    }
-
-    fun start() {
+    private fun start() {
         if (totalTime == 0L) return
         valueAnim?.cancel()
         valueAnim = ValueAnimator.ofInt(totalTime.toInt(), 0)
         valueAnim?.interpolator = LinearInterpolator()
         valueAnim?.duration = totalTime * 1000L
-        valueAnim?.start()
         valueAnim?.addUpdateListener {
             timeLeft = (it.animatedValue as Int).toLong()
         }
@@ -89,37 +93,29 @@ class TimeViewModel : ViewModel() {
                 complete()
             }
         })
+        valueAnim?.start()
         status = TimerStatus.STARTED
     }
 
-    fun pause() {
+    private fun pause() {
         valueAnim?.pause()
         status = TimerStatus.PAUSED
     }
 
-    fun resume() {
+    private fun resume() {
         valueAnim?.resume()
         status = TimerStatus.STARTED
     }
 
-    fun stop() {
+    private fun stop() {
         valueAnim?.cancel()
         timeLeft = 0
         status = TimerStatus.NOT_START
     }
 
-    fun complete() {
+    private fun complete() {
         status = TimerStatus.COMPLETE
     }
-
-    fun reset() {
-        totalTime = 0
-        timeLeft = 0
-        status = TimerStatus.NOT_START
-    }
-
-    fun completeString() = if (status == TimerStatus.COMPLETE) "Complete!" else ""
-    fun hideEditText() = status == TimerStatus.STARTED || status == TimerStatus.PAUSED
 }
 
 enum class TimerStatus {

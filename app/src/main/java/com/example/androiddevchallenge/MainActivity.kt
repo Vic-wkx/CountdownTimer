@@ -123,24 +123,19 @@ fun ProgressCircle(viewModel: TimeViewModel) {
 
 @Composable
 private fun EditText(viewModel: TimeViewModel) {
-    Box(
+    if (viewModel.hideEditText()) return
+    TextField(
         modifier = Modifier
-            .size(250.dp, 100.dp)
-    ) {
-        if (viewModel.hideEditText()) return
-        TextField(
-            modifier = Modifier
-                .padding(16.dp)
-                .size(200.dp, 60.dp),
-            value = viewModel.editTextValue(),
-            onValueChange = {
-                viewModel.editTextValueChanged(it)
-            },
-            label = { Text("Countdown Seconds") },
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-    }
+            .padding(16.dp)
+            .size(200.dp, 60.dp),
+        value = viewModel.editTextValue(),
+        onValueChange = {
+            viewModel.editTextValueChanged(it)
+        },
+        label = { Text("Countdown Seconds") },
+        maxLines = 1,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+    )
 }
 
 @Composable
