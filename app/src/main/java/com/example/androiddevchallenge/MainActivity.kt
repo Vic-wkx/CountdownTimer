@@ -20,22 +20,35 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
-import com.google.android.material.color.MaterialColors
 
+/**
+ * Created by Kevin 2021-03-04
+ */
 class MainActivity : AppCompatActivity() {
     private val viewModel: TimeViewModel by viewModels()
 
@@ -83,27 +96,29 @@ private fun CompleteText(viewModel: TimeViewModel) {
 @Composable
 fun ProgressCircle(viewModel: TimeViewModel) {
     Box(contentAlignment = Alignment.Center) {
-        Canvas(modifier = Modifier
-            .padding(16.dp)
-            .size(200.dp), onDraw = {
-            drawCircle(
-                color = Color.LightGray,
-                style = Stroke(width = 16.dp.toPx(), pathEffect = PathEffect.dashPathEffect(intervals = floatArrayOf(3.dp.toPx(), 3.dp.toPx())))
-            )
-            drawArc(
-                startAngle = -90f,
-                sweepAngle = viewModel.progressSweepAngle(),
-                useCenter = false,
-                style = Stroke(width = 16.dp.toPx()),
-                color = Color.Cyan,
-                alpha = 0.5f
-            )
-        })
+        Canvas(
+            modifier = Modifier
+                .padding(16.dp)
+                .size(200.dp),
+            onDraw = {
+                drawCircle(
+                    color = Color.LightGray,
+                    style = Stroke(width = 16.dp.toPx(), pathEffect = PathEffect.dashPathEffect(intervals = floatArrayOf(3.dp.toPx(), 3.dp.toPx())))
+                )
+                drawArc(
+                    startAngle = -90f,
+                    sweepAngle = viewModel.progressSweepAngle(),
+                    useCenter = false,
+                    style = Stroke(width = 16.dp.toPx()),
+                    color = Color.Cyan,
+                    alpha = 0.5f
+                )
+            }
+        )
         Text(
             text = viewModel.timeLeftValue()
         )
     }
-
 }
 
 @Composable
@@ -137,7 +152,8 @@ private fun StartButton(viewModel: TimeViewModel) {
         enabled = viewModel.startButtonEnabled(),
         onClick = {
             viewModel.clickStartButton()
-        }) {
+        }
+    ) {
         Text(text = viewModel.startButtonDisplayString())
     }
 }
@@ -148,9 +164,11 @@ private fun StopButton(viewModel: TimeViewModel) {
         modifier = Modifier
             .width(150.dp)
             .padding(16.dp),
-        enabled = viewModel.stopButtonEnabled(), onClick = {
+        enabled = viewModel.stopButtonEnabled(),
+        onClick = {
             viewModel.clickStopButton()
-        }) {
+        }
+    ) {
         Text(text = "Stop")
     }
 }
