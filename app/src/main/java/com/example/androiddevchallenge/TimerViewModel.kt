@@ -28,7 +28,7 @@ import com.example.androiddevchallenge.utils.TimeFormatUtils
 /**
  * Created by Kevin 2021-03-04
  */
-class TimeViewModel : ViewModel() {
+class TimerViewModel : ViewModel() {
     var status: TimerStatus by mutableStateOf(TimerStatus.NOT_START)
     var totalTime: Long by mutableStateOf(0)
     var timeLeft: Long by mutableStateOf(0)
@@ -36,7 +36,7 @@ class TimeViewModel : ViewModel() {
 
     fun progressSweepAngle(): Float {
         return if (status == TimerStatus.NOT_START || status == TimerStatus.COMPLETE) {
-            360f
+            0f
         } else {
             timeLeft * 1.0f / totalTime * 360
         }
@@ -65,6 +65,7 @@ class TimeViewModel : ViewModel() {
     fun editTextValue() = if (totalTime == 0L) "" else totalTime.toString()
 
     fun editTextValueChanged(it: String) {
+        if (status == TimerStatus.COMPLETE) status = TimerStatus.NOT_START
         // max length: 5
         if (it.length > 5) return
         var value = it.replace("\\D".toRegex(), "")
@@ -74,7 +75,7 @@ class TimeViewModel : ViewModel() {
         totalTime = value.toLong()
     }
 
-    fun hideEditText() = status == TimerStatus.STARTED || status == TimerStatus.PAUSED
+    fun showEditText() = status == TimerStatus.NOT_START || status == TimerStatus.COMPLETE
 
     fun completeString() = if (status == TimerStatus.COMPLETE) "Complete!" else ""
 
@@ -114,6 +115,7 @@ class TimeViewModel : ViewModel() {
     }
 
     private fun complete() {
+        totalTime = 0
         status = TimerStatus.COMPLETE
     }
 }

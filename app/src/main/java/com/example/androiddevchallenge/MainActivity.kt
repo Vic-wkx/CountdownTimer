@@ -20,37 +20,42 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.Button
 import androidx.compose.material.TextField
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * Created by Kevin 2021-03-04
  */
 class MainActivity : AppCompatActivity() {
-    private val viewModel: TimeViewModel by viewModels()
+    private val viewModel: TimerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,10 +75,22 @@ class MainActivity : AppCompatActivity() {
 // Start building your app here!
 @Composable
 fun MyApp() {
-    val viewModel: TimeViewModel = viewModel()
-    Surface(color = MaterialTheme.colors.background) {
+    val viewModel: TimerViewModel = viewModel()
+    Scaffold(
+        Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.app_name)
+                    )
+                }
+            )
+        },
+    ) {
         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             CompleteText(viewModel)
+            TimeLeftText(viewModel)
             ProgressCircle(viewModel)
             EditText(viewModel)
             Row {
@@ -85,61 +102,91 @@ fun MyApp() {
 }
 
 @Composable
-private fun CompleteText(viewModel: TimeViewModel) {
+private fun TimeLeftText(viewModel: TimerViewModel) {
+    Text(
+        text = viewModel.timeLeftValue(),
+        modifier = Modifier.padding(16.dp)
+    )
+}
+
+@Composable
+private fun CompleteText(viewModel: TimerViewModel) {
     Text(
         text = viewModel.completeString(),
-        modifier = Modifier.padding(16.dp),
         color = MaterialTheme.colors.primary
     )
 }
 
 @Composable
-fun ProgressCircle(viewModel: TimeViewModel) {
+fun ProgressCircle(viewModel: TimerViewModel) {
+    val size = 160.dp
     Box(contentAlignment = Alignment.Center) {
         Canvas(
             modifier = Modifier
-                .padding(16.dp)
-                .size(200.dp),
-            onDraw = {
-                drawCircle(
-                    color = Color.LightGray,
-                    style = Stroke(width = 16.dp.toPx(), pathEffect = PathEffect.dashPathEffect(intervals = floatArrayOf(3.dp.toPx(), 3.dp.toPx())))
-                )
-                drawArc(
-                    startAngle = -90f,
-                    sweepAngle = viewModel.progressSweepAngle(),
-                    useCenter = false,
-                    style = Stroke(width = 16.dp.toPx()),
-                    color = Color.Cyan,
-                    alpha = 0.5f
-                )
-            }
-        )
-        Text(
-            text = viewModel.timeLeftValue()
-        )
+                .size(size)
+        ) {
+            val sweepAngle = viewModel.progressSweepAngle()
+            val r = size.toPx() / 2
+            val stokeWidth = 12.dp.toPx()
+            drawCircle(
+                color = Color.LightGray,
+                style = Stroke(width = stokeWidth, pathEffect = PathEffect.dashPathEffect(intervals = floatArrayOf(3.dp.toPx(), 2.dp.toPx())))
+            )
+            drawArc(
+                startAngle = -90f,
+                sweepAngle = sweepAngle,
+                useCenter = false,
+                style = Stroke(width = stokeWidth),
+                color = Color.Cyan,
+                alpha = 0.5f
+            )
+            // Pointer
+            val angle = (360 - sweepAngle) / 180 * Math.PI
+            val pointTailLength = 8.dp.toPx()
+            drawLine(
+                color = Color.Red,
+                start = Offset(r + pointTailLength * sin(angle).toFloat(), r + pointTailLength * cos(angle).toFloat()),
+                end = Offset((r - r * sin(angle) - sin(angle) * stokeWidth / 2).toFloat(), (r - r * cos(angle) - cos(angle) * stokeWidth / 2).toFloat()),
+                strokeWidth = 2.dp.toPx()
+            )
+            drawCircle(
+                color = Color.Red,
+                radius = 5.dp.toPx()
+            )
+            drawCircle(
+                color = Color.White,
+                radius = 3.dp.toPx()
+            )
+        }
     }
 }
 
 @Composable
-private fun EditText(viewModel: TimeViewModel) {
-    if (viewModel.hideEditText()) return
-    TextField(
+private fun EditText(viewModel: TimerViewModel) {
+    Box(
         modifier = Modifier
-            .padding(16.dp)
-            .size(200.dp, 60.dp),
-        value = viewModel.editTextValue(),
-        onValueChange = {
-            viewModel.editTextValueChanged(it)
-        },
-        label = { Text("Countdown Seconds") },
-        maxLines = 1,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-    )
+            .size(300.dp, 120.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        if (viewModel.showEditText()) {
+            TextField(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(200.dp, 60.dp),
+                value = viewModel.editTextValue(),
+                onValueChange = {
+                    viewModel.editTextValueChanged(it)
+                },
+                label = { Text("Countdown Seconds") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+        }
+    }
 }
 
 @Composable
-private fun StartButton(viewModel: TimeViewModel) {
+private fun StartButton(viewModel: TimerViewModel) {
     Button(
         modifier = Modifier
             .width(150.dp)
@@ -154,7 +201,7 @@ private fun StartButton(viewModel: TimeViewModel) {
 }
 
 @Composable
-private fun StopButton(viewModel: TimeViewModel) {
+private fun StopButton(viewModel: TimerViewModel) {
     Button(
         modifier = Modifier
             .width(150.dp)
