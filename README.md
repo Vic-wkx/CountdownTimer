@@ -1,4 +1,4 @@
-# Put title of your app here
+# Countdown Timer
 
 ![Workflow result](https://github.com/wkxjc/CountdownTimer/workflows/Check/badge.svg)
 
