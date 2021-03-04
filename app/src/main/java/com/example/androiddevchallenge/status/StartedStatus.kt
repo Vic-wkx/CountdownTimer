@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.androiddevchallenge.utils
+package com.example.androiddevchallenge.status
+
+import com.example.androiddevchallenge.model.TimerViewModel
 
 /**
  * Description:
- * Used to format time
+ * Started
  *
  * @author Alpinist Wang
- * Date:    2021/3/4
+ * Date:    2021/3/5
  */
-object TimeFormatUtils {
+class StartedStatus(private val viewModel: TimerViewModel) : IStatus {
+    override fun startButtonDisplayString() = "Pause"
 
-    fun formatTime(time: Long): String {
-        var value = time
-        val seconds = value % 60
-        value /= 60
-        val minutes = value % 60
-        value /= 60
-        val hours = value % 60
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
-    }
+    override fun clickStartButton() = viewModel.animatorController.pause()
+
+    override fun stopButtonEnabled() = true
+
+    override fun clickStopButton() = viewModel.animatorController.stop()
+
+    override fun showEditText() = false
+
+    override fun progressSweepAngle() = viewModel.timeLeft * 1.0f / viewModel.totalTime * 360
+
+    override fun completeString() = ""
 }

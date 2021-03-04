@@ -16,15 +16,23 @@
 package com.example.androiddevchallenge.utils
 
 import junit.framework.TestCase
+import org.junit.Assert
 import org.junit.Test
 
+/**
+ * Description:
+ * Test TimeFormatUtils
+ *
+ * @author Alpinist Wang
+ * Date:    2021/3/5
+ */
 class TimeFormatUtilsTest : TestCase() {
     @Test
     fun test() {
-        println(TimeFormatUtils.formatTime(0))
-        println(TimeFormatUtils.formatTime(10))
-        println(TimeFormatUtils.formatTime(100))
-        println(TimeFormatUtils.formatTime(1000))
-        println(TimeFormatUtils.formatTime(10000))
+        Assert.assertEquals("00:00:00", TimeFormatUtils.formatTime(0))
+        Assert.assertEquals("00:00:30", TimeFormatUtils.formatTime(30))
+        Assert.assertEquals("00:01:00", TimeFormatUtils.formatTime(60))
+        Assert.assertEquals("00:10:30", TimeFormatUtils.formatTime(630))
+        Assert.assertEquals("01:40:00", TimeFormatUtils.formatTime(6000))
     }
 }

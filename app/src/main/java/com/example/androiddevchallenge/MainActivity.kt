@@ -44,15 +44,20 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.androiddevchallenge.model.TimerViewModel
 import com.example.androiddevchallenge.ui.theme.MyTheme
+import com.example.androiddevchallenge.utils.TimeFormatUtils
 import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * Created by Kevin 2021-03-04
+ * Description:
+ * Home
+ *
+ * @author Alpinist Wang
+ * Date:    2021/3/5
  */
 class MainActivity : AppCompatActivity() {
     private val viewModel: TimerViewModel by viewModels()
@@ -68,7 +73,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.valueAnim?.cancel()
+        // Release memory
+        viewModel.animatorController.stop()
     }
 }
 
@@ -104,34 +110,85 @@ fun MyApp() {
 @Composable
 private fun TimeLeftText(viewModel: TimerViewModel) {
     Text(
-        text = viewModel.timeLeftValue(),
+        text = TimeFormatUtils.formatTime(viewModel.timeLeft),
         modifier = Modifier.padding(16.dp)
     )
 }
 
 @Composable
-private fun CompleteText(viewModel: TimerViewModel) {
-    Text(
-        text = viewModel.completeString(),
-        color = MaterialTheme.colors.primary
-    )
+private fun EditText(viewModel: TimerViewModel) {
+    Box(
+        modifier = Modifier
+            .size(300.dp, 120.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        if (viewModel.status.showEditText()) {
+            TextField(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(200.dp, 60.dp),
+                value = if (viewModel.totalTime == 0L) "" else viewModel.totalTime.toString(),
+                onValueChange = {
+                    viewModel.updateValue(it)
+                },
+                label = { Text("Countdown Seconds") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+        }
+    }
+}
+
+@Composable
+private fun StartButton(viewModel: TimerViewModel) {
+    Button(
+        modifier = Modifier
+            .width(150.dp)
+            .padding(16.dp),
+        enabled = viewModel.totalTime > 0,
+        onClick = {
+            viewModel.status.clickStartButton()
+        }
+    ) {
+        Text(text = viewModel.status.startButtonDisplayString())
+    }
+}
+
+@Composable
+private fun StopButton(viewModel: TimerViewModel) {
+    Button(
+        modifier = Modifier
+            .width(150.dp)
+            .padding(16.dp),
+        enabled = viewModel.status.stopButtonEnabled(),
+        onClick = {
+            viewModel.status.clickStopButton()
+        }
+    ) {
+        Text(text = "Stop")
+    }
 }
 
 @Composable
 fun ProgressCircle(viewModel: TimerViewModel) {
+    // Circle diameter
     val size = 160.dp
     Box(contentAlignment = Alignment.Center) {
         Canvas(
             modifier = Modifier
                 .size(size)
         ) {
-            val sweepAngle = viewModel.progressSweepAngle()
+            val sweepAngle = viewModel.status.progressSweepAngle()
+            // Circle radius
             val r = size.toPx() / 2
+            // The width of Ring
             val stokeWidth = 12.dp.toPx()
+            // Draw dial plate
             drawCircle(
                 color = Color.LightGray,
                 style = Stroke(width = stokeWidth, pathEffect = PathEffect.dashPathEffect(intervals = floatArrayOf(3.dp.toPx(), 2.dp.toPx())))
             )
+            // Draw ring
             drawArc(
                 startAngle = -90f,
                 sweepAngle = sweepAngle,
@@ -162,71 +219,9 @@ fun ProgressCircle(viewModel: TimerViewModel) {
 }
 
 @Composable
-private fun EditText(viewModel: TimerViewModel) {
-    Box(
-        modifier = Modifier
-            .size(300.dp, 120.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        if (viewModel.showEditText()) {
-            TextField(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .size(200.dp, 60.dp),
-                value = viewModel.editTextValue(),
-                onValueChange = {
-                    viewModel.editTextValueChanged(it)
-                },
-                label = { Text("Countdown Seconds") },
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-        }
-    }
-}
-
-@Composable
-private fun StartButton(viewModel: TimerViewModel) {
-    Button(
-        modifier = Modifier
-            .width(150.dp)
-            .padding(16.dp),
-        enabled = viewModel.startButtonEnabled(),
-        onClick = {
-            viewModel.clickStartButton()
-        }
-    ) {
-        Text(text = viewModel.startButtonDisplayString())
-    }
-}
-
-@Composable
-private fun StopButton(viewModel: TimerViewModel) {
-    Button(
-        modifier = Modifier
-            .width(150.dp)
-            .padding(16.dp),
-        enabled = viewModel.stopButtonEnabled(),
-        onClick = {
-            viewModel.clickStopButton()
-        }
-    ) {
-        Text(text = "Stop")
-    }
-}
-
-@Preview("Light Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun LightPreview() {
-    MyTheme {
-        MyApp()
-    }
-}
-
-@Preview("Dark Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun DarkPreview() {
-    MyTheme(darkTheme = true) {
-        MyApp()
-    }
+private fun CompleteText(viewModel: TimerViewModel) {
+    Text(
+        text = viewModel.status.completeString(),
+        color = MaterialTheme.colors.primary
+    )
 }
