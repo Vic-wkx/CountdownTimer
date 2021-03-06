@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -94,7 +95,11 @@ fun MyApp() {
             )
         },
     ) {
-        Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             CompleteText(viewModel)
             TimeLeftText(viewModel)
             ProgressCircle(viewModel)
@@ -125,12 +130,9 @@ private fun EditText(viewModel: TimerViewModel) {
         if (viewModel.status.showEditText()) {
             TextField(
                 modifier = Modifier
-                    .padding(16.dp)
                     .size(200.dp, 60.dp),
                 value = if (viewModel.totalTime == 0L) "" else viewModel.totalTime.toString(),
-                onValueChange = {
-                    viewModel.updateValue(it)
-                },
+                onValueChange = viewModel::updateValue,
                 label = { Text("Countdown Seconds") },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -146,9 +148,7 @@ private fun StartButton(viewModel: TimerViewModel) {
             .width(150.dp)
             .padding(16.dp),
         enabled = viewModel.totalTime > 0,
-        onClick = {
-            viewModel.status.clickStartButton()
-        }
+        onClick = viewModel.status::clickStartButton
     ) {
         Text(text = viewModel.status.startButtonDisplayString())
     }
@@ -161,9 +161,7 @@ private fun StopButton(viewModel: TimerViewModel) {
             .width(150.dp)
             .padding(16.dp),
         enabled = viewModel.status.stopButtonEnabled(),
-        onClick = {
-            viewModel.status.clickStopButton()
-        }
+        onClick = viewModel.status::clickStopButton
     ) {
         Text(text = "Stop")
     }
@@ -175,8 +173,7 @@ fun ProgressCircle(viewModel: TimerViewModel) {
     val size = 160.dp
     Box(contentAlignment = Alignment.Center) {
         Canvas(
-            modifier = Modifier
-                .size(size)
+            modifier = Modifier.size(size)
         ) {
             val sweepAngle = viewModel.status.progressSweepAngle()
             // Circle radius
@@ -186,15 +183,28 @@ fun ProgressCircle(viewModel: TimerViewModel) {
             // Draw dial plate
             drawCircle(
                 color = Color.LightGray,
-                style = Stroke(width = stokeWidth, pathEffect = PathEffect.dashPathEffect(intervals = floatArrayOf(3.dp.toPx(), 2.dp.toPx())))
+                style = Stroke(
+                    width = stokeWidth,
+                    pathEffect = PathEffect.dashPathEffect(
+                        intervals = floatArrayOf(1.dp.toPx(), 3.dp.toPx())
+                    )
+                )
             )
             // Draw ring
             drawArc(
+                brush = Brush.sweepGradient(
+                    0f to Color.Magenta,
+                    0.5f to Color.Blue,
+                    0.75f to Color.Green,
+                    0.75f to Color.Transparent,
+                    1f to Color.Magenta
+                ),
                 startAngle = -90f,
                 sweepAngle = sweepAngle,
                 useCenter = false,
-                style = Stroke(width = stokeWidth),
-                color = Color.Cyan,
+                style = Stroke(
+                    width = stokeWidth
+                ),
                 alpha = 0.5f
             )
             // Pointer

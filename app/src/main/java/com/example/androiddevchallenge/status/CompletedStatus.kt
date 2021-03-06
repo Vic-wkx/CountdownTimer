@@ -37,5 +37,5 @@ class CompletedStatus(private val viewModel: TimerViewModel) : IStatus {
 
     override fun progressSweepAngle() = 0f
 
-    override fun completeString() = "Complete!"
+    override fun completeString() = "Completed!"
 }

@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.androiddevchallenge.status.CompletedStatus
 import com.example.androiddevchallenge.status.IStatus
 import com.example.androiddevchallenge.status.NotStartedStatus
 
@@ -44,11 +45,17 @@ class TimerViewModel : ViewModel() {
      */
     var timeLeft: Long by mutableStateOf(0)
 
+    var animatorController = AnimatorController(this)
+
+    var status: IStatus by mutableStateOf(NotStartedStatus(this))
+
     /**
      * Update value when EditText content changed
      * @param text new content in EditText
      */
     fun updateValue(text: String) {
+        // After user clicks EditText, CompletedStatus turns to NotStartedStatus.
+        if (status is CompletedStatus) status = NotStartedStatus(this)
         // Just in case the number is too big
         if (text.length > MAX_INPUT_LENGTH) return
         // Remove non-numeric elements
@@ -60,7 +67,4 @@ class TimerViewModel : ViewModel() {
         totalTime = value.toLong()
         timeLeft = value.toLong()
     }
-
-    var animatorController = AnimatorController(this)
-    var status: IStatus by mutableStateOf(NotStartedStatus(this))
 }

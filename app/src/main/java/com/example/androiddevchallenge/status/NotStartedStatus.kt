@@ -36,7 +36,7 @@ class NotStartedStatus(private val viewModel: TimerViewModel) : IStatus {
 
     override fun showEditText() = true
 
-    override fun progressSweepAngle(): Float = 0f
+    override fun progressSweepAngle() = if (viewModel.totalTime > 0) 360f else 0f
 
     override fun completeString() = ""
 }
