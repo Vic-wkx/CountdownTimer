@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.androiddevchallenge.model
+package com.example.androiddevchallenge.controller
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.view.animation.LinearInterpolator
+import com.example.androiddevchallenge.model.TimerViewModel
 import com.example.androiddevchallenge.status.CompletedStatus
 import com.example.androiddevchallenge.status.NotStartedStatus
 import com.example.androiddevchallenge.status.PausedStatus

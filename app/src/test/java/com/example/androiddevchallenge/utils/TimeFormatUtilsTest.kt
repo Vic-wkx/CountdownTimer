@@ -34,5 +34,6 @@ class TimeFormatUtilsTest : TestCase() {
         Assert.assertEquals("00:01:00", TimeFormatUtils.formatTime(60))
         Assert.assertEquals("00:10:30", TimeFormatUtils.formatTime(630))
         Assert.assertEquals("01:40:00", TimeFormatUtils.formatTime(6000))
+        Assert.assertEquals("27:46:39", TimeFormatUtils.formatTime(99999))
     }
 }

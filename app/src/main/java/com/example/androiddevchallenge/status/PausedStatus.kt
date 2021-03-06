@@ -37,5 +37,5 @@ class PausedStatus(private val viewModel: TimerViewModel) : IStatus {
 
     override fun progressSweepAngle() = viewModel.timeLeft * 1.0f / viewModel.totalTime * 360
 
-    override fun completeString() = ""
+    override fun completedString() = ""
 }

@@ -55,7 +55,7 @@ interface IStatus {
     fun progressSweepAngle(): Float
 
     /**
-     * Complete string
+     * Completed string
      */
-    fun completeString(): String
+    fun completedString(): String
 }
