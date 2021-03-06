@@ -32,6 +32,9 @@ import com.example.androiddevchallenge.status.StartedStatus
  * @author Alpinist Wang
  * Date:    2021/3/4
  */
+// Control how many times the pointer is updated in a second
+const val SPEED = 100
+
 class AnimatorController(private val viewModel: TimerViewModel) {
 
     private var valueAnimator: ValueAnimator? = null
@@ -40,11 +43,12 @@ class AnimatorController(private val viewModel: TimerViewModel) {
         if (viewModel.totalTime == 0L) return
         if (valueAnimator == null) {
             // Animator: totalTime -> 0
-            valueAnimator = ValueAnimator.ofInt(viewModel.totalTime.toInt(), 0)
+            valueAnimator = ValueAnimator.ofInt(viewModel.totalTime.toInt() * SPEED, 0)
             valueAnimator?.interpolator = LinearInterpolator()
             // Update timeLeft in ViewModel
             valueAnimator?.addUpdateListener {
-                viewModel.timeLeft = (it.animatedValue as Int).toLong()
+                viewModel.animValue = (it.animatedValue as Int) / SPEED.toFloat()
+                viewModel.timeLeft = (it.animatedValue as Int).toLong() / SPEED
             }
             valueAnimator?.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
@@ -53,7 +57,7 @@ class AnimatorController(private val viewModel: TimerViewModel) {
                 }
             })
         } else {
-            valueAnimator?.setIntValues(viewModel.totalTime.toInt(), 0)
+            valueAnimator?.setIntValues(viewModel.totalTime.toInt() * SPEED, 0)
         }
         // (LinearInterpolator + duration) aim to set the interval as 1 second.
         valueAnimator?.duration = viewModel.totalTime * 1000L

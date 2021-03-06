@@ -51,6 +51,11 @@ class TimerViewModel : ViewModel() {
     var status: IStatus by mutableStateOf(NotStartedStatus(this))
 
     /**
+     * Temp value when anim is active
+     */
+    var animValue: Float by mutableStateOf(0.0f)
+
+    /**
      * Update value when EditText content changed
      * @param text new content in EditText
      */
