@@ -209,10 +209,10 @@ fun ProgressCircle(viewModel: TimerViewModel) {
             )
             // Pointer
             val angle = (360 - sweepAngle) / 180 * Math.PI
-            val pointTailLength = 8.dp.toPx()
+            val pointerTailLength = 8.dp.toPx()
             drawLine(
                 color = Color.Red,
-                start = Offset(r + pointTailLength * sin(angle).toFloat(), r + pointTailLength * cos(angle).toFloat()),
+                start = Offset(r + pointerTailLength * sin(angle).toFloat(), r + pointerTailLength * cos(angle).toFloat()),
                 end = Offset((r - r * sin(angle) - sin(angle) * stokeWidth / 2).toFloat(), (r - r * cos(angle) - cos(angle) * stokeWidth / 2).toFloat()),
                 strokeWidth = 2.dp.toPx()
             )
