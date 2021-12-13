@@ -6,14 +6,17 @@
 ## :scroll: Description
 It's a countdown timer, used for google android dev challenge for Compose!
 
-
 ## :bulb: Motivation and Context
-Clean and Simple.
-
+It's clean and simple.
+Design process in detail: [用 Compose 写一个 Countdown Timer](https://blog.csdn.net/AlpinistWang/article/details/114378461)
 
 ## :camera_flash: Screenshots
-<!-- You can add more screenshots here if you like -->
 <img src="/results/screenshot_1.png" width="260">&emsp;<img src="/results/screenshot_2.png" width="260">
+
+## :dancer: Follow-up
+I finally won the prize!
+
+<img src="/results/prize.png" width="260">
 
 ## License
 ```
