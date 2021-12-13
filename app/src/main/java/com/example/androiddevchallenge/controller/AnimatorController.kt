@@ -24,6 +24,8 @@ import com.example.androiddevchallenge.status.CompletedStatus
 import com.example.androiddevchallenge.status.NotStartedStatus
 import com.example.androiddevchallenge.status.PausedStatus
 import com.example.androiddevchallenge.status.StartedStatus
+import com.example.androiddevchallenge.utils.LogUtils
+import kotlin.math.ceil
 
 /**
  * Description:
@@ -40,6 +42,7 @@ class AnimatorController(private val viewModel: TimerViewModel) {
     private var valueAnimator: ValueAnimator? = null
 
     fun start() {
+        LogUtils.d("Start, totalTime: ${viewModel.totalTime}")
         if (viewModel.totalTime == 0L) return
         if (valueAnimator == null) {
             // Animator: totalTime -> 0
@@ -48,7 +51,7 @@ class AnimatorController(private val viewModel: TimerViewModel) {
             // Update timeLeft in ViewModel
             valueAnimator?.addUpdateListener {
                 viewModel.animValue = (it.animatedValue as Int) / SPEED.toFloat()
-                viewModel.timeLeft = (it.animatedValue as Int).toLong() / SPEED
+                viewModel.timeLeft = ceil(it.animatedValue as Int / SPEED.toFloat()).toLong()
             }
             valueAnimator?.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
@@ -66,22 +69,26 @@ class AnimatorController(private val viewModel: TimerViewModel) {
     }
 
     fun pause() {
+        LogUtils.d("Pause, totalTime: ${viewModel.totalTime}, timeLeft: ${viewModel.timeLeft}")
         valueAnimator?.pause()
         viewModel.status = PausedStatus(viewModel)
     }
 
     fun resume() {
+        LogUtils.d("Resume, totalTime: ${viewModel.totalTime}, timeLeft: ${viewModel.timeLeft}")
         valueAnimator?.resume()
         viewModel.status = StartedStatus(viewModel)
     }
 
     fun stop() {
+        LogUtils.d("Stop")
         valueAnimator?.cancel()
         viewModel.timeLeft = 0
         viewModel.status = NotStartedStatus(viewModel)
     }
 
     fun complete() {
+        LogUtils.d("Complete")
         viewModel.totalTime = 0
         viewModel.status = CompletedStatus(viewModel)
     }
