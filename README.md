@@ -16,7 +16,7 @@ Design process in detail: [用 Compose 写一个 Countdown Timer](https://blog.c
 ## :dancer: Follow-up
 I finally won the prize!
 
-<img src="/results/prize.png" width="260">
+<img src="/results/prize.png" width="520">
 
 ## License
 ```
